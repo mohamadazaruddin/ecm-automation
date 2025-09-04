@@ -145,21 +145,32 @@
         <label for="docType">Select Doc Type</label>
         <select class="case-input" id="docType" required>
           <option value="" disabled selected>Select an option</option>
-          <option value="colo">
+          <!-- <option value="colo">
             Focalentity Due Deligence No Results Matched
-          </option>
-          <option value="colo">
+          </option> -->
+          <option
+            value="Focal entity name match, age match, address match, phone number
+            match"
+          >
             Focal entity name match, age match, address match, phone number
             match
           </option>
-          <option value="No OFAC Sanction Found for the focal entity">
+          <option value="Focal entity SMB details">
             Focal entity SMB details
           </option>
           <option value="No OFAC Sanction Found for the focal entity">
             OFAC No Sanction Found
           </option>
-          <option value="colo">Google Screening No Results Matched</option>
-          <option value="colo">Google Screening No Negative news</option>
+          <option
+            value="On the review of the below hits no Results found related to the focal entity."
+          >
+            Google Screening No Results Matched
+          </option>
+          <option
+            value="On the review of the below hits no Adverse media or Negative news related to fincrime found related to the focal entity"
+          >
+            Google Screening No Negative news
+          </option>
         </select>
         <button id="generatebtn" class="formbtns" onclick="generateNarrative()">
           Submit
@@ -260,15 +271,15 @@
                 create: true,
               }
             );
-            await caseFolder.getDirectoryHandle("Due_Deligence_Focal_Entity", {
+            await caseFolder.getDirectoryHandle("Focal_Entity", {
               create: true,
             });
-            await caseFolder.getDirectoryHandle("OFAC_Focal_Entity", {
-              create: true,
-            });
-            await caseFolder.getDirectoryHandle("Screening_Focal_Entity", {
-              create: true,
-            });
+            // await caseFolder.getDirectoryHandle("OFAC_Focal_Entity", {
+            //   create: true,
+            // });
+            // await caseFolder.getDirectoryHandle("Screening_Focal_Entity", {
+            //   create: true,
+            // });
             const fileHandle = await caseFolder.getFileHandle(
               "Customer_Info.txt",
               { create: true }
@@ -277,23 +288,25 @@
             await writable.write("");
             await writable.close();
 
-            const docxHandle = await caseFolder.getFileHandle("Summary.docx", {
-              create: true,
-            });
+            const docxHandle = await caseFolder.getFileHandle(
+              `${caseId}_Summary.docx`,
+              {
+                create: true,
+              }
+            );
             const docxWritable = await docxHandle.createWritable();
             await docxWritable.write("");
             await docxWritable.close();
             if (counterParty === "yes") {
-              await caseFolder.getDirectoryHandle(
-                "Due_Deligence_Counter_party",
-                { create: true }
-              );
-              await caseFolder.getDirectoryHandle("OFAC_Counter_party", {
+              await caseFolder.getDirectoryHandle("Counter_party", {
                 create: true,
               });
-              await caseFolder.getDirectoryHandle("Screening_Counter_party", {
-                create: true,
-              });
+              // await caseFolder.getDirectoryHandle("OFAC_Counter_party", {
+              //   create: true,
+              // });
+              // await caseFolder.getDirectoryHandle("Screening_Counter_party", {
+              //   create: true,
+              // });
             }
             message.classList.add("success");
             message.textContent = `Folder "${caseId}", subfolders, and "Customer_Info.txt" created successfully!`;
