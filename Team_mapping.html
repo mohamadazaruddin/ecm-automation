@@ -72,35 +72,26 @@
           reader.onload = function (event) {
             const data = new Uint8Array(event.target.result);
             const workbook = XLSX.read(data, { type: "array" });
-
-       
             const firstSheetName = workbook.SheetNames[0];
             const worksheet = workbook.Sheets[firstSheetName];
-
-            
             const json = XLSX.utils.sheet_to_json(worksheet, {
               header: 1,
               raw: false,
             });
-
-     
             const table = document.getElementById("orgTable");
             const thead = table.querySelector("thead");
             const tbody = table.querySelector("tbody");
             thead.innerHTML = "";
             tbody.innerHTML = "";
-
             if (json.length > 0) {
-              
-              let thRow = "<tr>";
+              let thRow = "<tr><th>S. No.</th>";
               json[0].forEach((col) => (thRow += `<th>${col}</th>`));
               thRow += "</tr>";
               thead.innerHTML = thRow;
-              
+
               for (let i = 1; i < json.length; i++) {
-                let trRow = "<tr>";
+                let trRow = `<tr><td>${i}</td>`;
                 json[i].forEach((cell) => {
-               
                   trRow += `<td>${cell !== undefined ? cell : ""}</td>`;
                 });
                 trRow += "</tr>";
@@ -114,19 +105,30 @@
       function searchTable() {
         const input = document
           .getElementById("searchInput")
-          .value.toLowerCase();
+          .value.toLowerCase()
+          .trim();
         const table = document.getElementById("orgTable");
         const rows = table.querySelectorAll("tbody tr");
+        let visibleCount = 1;
+
+        const searchTerms = input.split(/\s+/).filter((term) => term);
+
         rows.forEach((row) => {
-         
           const cells = Array.from(row.cells);
-          const match = cells.some((cell) =>
-            cell.textContent.toLowerCase().includes(input)
-          );
-          if (match || input === "") {
+
+          const match =
+            searchTerms.length === 0 ||
+            searchTerms.some((term) =>
+              cells.some((cell) =>
+                cell.textContent.toLowerCase().includes(term)
+              )
+            );
+          if (match) {
             row.classList.remove("hide");
+            row.cells[0].textContent = visibleCount++;
           } else {
             row.classList.add("hide");
+            row.cells[0].textContent = "";
           }
         });
       }
