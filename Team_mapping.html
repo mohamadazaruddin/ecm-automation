@@ -13,8 +13,8 @@
         background-color: #f2f3f7;
       }
       h2 {
-        color: #15538b;
-        margin: 10px 0px;
+        color: #072d4e;
+        margin: 0px 0px;
       }
       .search-bar {
         margin-bottom: 20px;
@@ -35,9 +35,10 @@
       }
       #orgTable th,
       #orgTable td {
-        border: 1px solid #f2f3f7;
+        border: 1px solid #d3d2d2;
         padding: 8px 12px;
         text-align: left;
+        margin-bottom: 4px;
       }
       #orgTable th {
         background-color: #a79af3;
@@ -71,6 +72,9 @@
       .header {
         background-color: #fff;
         padding: 16px 40px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
       }
 
       #dashboard {
@@ -79,16 +83,44 @@
       .content {
         padding: 0px 40px;
       }
+      .instruction {
+        margin: 0;
+        margin-top: 6px;
+        color: #626263;
+      }
+      .Import-btn {
+        padding: 8px 28px;
+        font-size: 16px;
+        background-color: #0071db;
+        border: 1px solid #034c91;
+        border-radius: 4px;
+        font-weight: 400;
+        color: #fff;
+      }
     </style>
   </head>
   <body>
     <div class="header">
-      <h2>Team Mapping : Last updated on 10/23/2025</h2>
+      <div>
+        <h2>Team Mapping</h2>
+        <p class="instruction">
+          Please select the file from: z/scheduling/Team Mapping.
+        </p>
+      </div>
       <div class="upload-section">
-        <label for="fileInput"
-          ><strong>Select file from: z/sheduling</strong></label
+        <input
+          type="file"
+          id="fileInput"
+          accept=".xlsx, .xls"
+          style="display: none"
+        />
+        <button
+          type="button"
+          class="Import-btn"
+          onclick="document.getElementById('fileInput').click();"
         >
-        <input type="file" id="fileInput" accept=".xlsx, .xls" />
+          Import File
+        </button>
       </div>
     </div>
     <div id="dashboard" style="display: flex; gap: 2rem; margin-bottom: 10px">
@@ -221,6 +253,8 @@
               analystLocation.Gurgaon.add(row[analystIdx].trim());
             if (loc === "bengalore")
               analystLocation.Bengalore.add(row[analystIdx].trim());
+            if (loc === "isreal")
+              analystLocation.Bengalore.add(row[analystIdx].trim());
           }
 
           if (
@@ -245,6 +279,8 @@
           analystLocation.Gurgaon.size;
         document.getElementById("bengaloreAnalystCount").textContent =
           analystLocation.Bengalore.size;
+        document.getElementById("israelAnalystCount").textContent =
+          analystLocation.Bengalore.size;
         document.getElementById("samplingAnalystCount").textContent =
           samplingAnalysts.size;
 
@@ -254,7 +290,8 @@
           samplingPercentCounts["25%"];
         document.getElementById("percent10").textContent =
           samplingPercentCounts["10%"];
-        document.getElementById("totalCount").textContent = data.length - 1;
+        document.getElementById("totalCount").textContent =
+          analysts.size + qcs.size;
       }
 
       function searchTable() {
