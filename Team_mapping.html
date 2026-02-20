@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -41,7 +41,7 @@
         margin-bottom: 4px;
       }
       #orgTable th {
-        background-color: #a79af3;
+        background-color: #58be35;
         color: #0b1925;
       }
       #orgTable tr:nth-child(even) {
@@ -52,7 +52,7 @@
       }
 
       .input-legend {
-        background-color: #7a3aa5;
+        background-color: #b9703c;
         padding: 8px 10px 10px 10px;
         border: 1px solid;
         color: #fff;
@@ -91,11 +91,11 @@
       .Import-btn {
         padding: 8px 28px;
         font-size: 16px;
-        background-color: #0071db;
-        border: 1px solid #034c91;
+        background-color: #2e8e25;
+        border: 1px solid #2e8e25;
         border-radius: 4px;
-        font-weight: 400;
-        color: #fff;
+        font-weight: 600;
+        color: #fffefe;
       }
     </style>
   </head>
@@ -117,7 +117,7 @@
         <button
           type="button"
           class="Import-btn"
-          onclick="document.getElementById('fileInput').click();"
+          onclick="document.getElementById('fileInput').click()"
         >
           Import File
         </button>
@@ -125,38 +125,9 @@
     </div>
     <div id="dashboard" style="display: flex; gap: 2rem; margin-bottom: 10px">
       <div class="counts">
-        <span>Analysts:</span> <strong id="analystCount">0</strong>
+        <span>Analyst:</span> <strong id="analystCount">0</strong>
       </div>
-      <div class="counts">
-        <span>QCs:</span> <strong id="qcCount">0</strong>
-      </div>
-      <div class="counts">
-        <span>Hyderabad :</span> <strong id="hyderabadAnalystCount">0</strong>
-      </div>
-      <div class="counts">
-        <span>Bengalore :</span> <strong id="bengaloreAnalystCount">0</strong>
-      </div>
-      <div class="counts">
-        <span>Gurgaon :</span> <strong id="gurgaonAnalystCount">0</strong>
-      </div>
-      <div class="counts">
-        <span>Israel :</span> <strong id="israelAnalystCount">0</strong>
-      </div>
-      <div class="counts">
-        <span>sampling :</span> <strong id="samplingAnalystCount">0</strong>
-      </div>
-      <div class="counts">
-        <span>10% :</span> <strong id="percent10">0</strong>
-      </div>
-      <div class="counts">
-        <span>25% :</span> <strong id="percent25">0</strong>
-      </div>
-      <div class="counts">
-        <span>50% :</span> <strong id="percent50">0</strong>
-      </div>
-      <div class="counts">
-        <span>Total :</span> <strong id="totalCount">0</strong>
-      </div>
+      <div class="counts"><span>QC:</span> <strong id="qcCount">0</strong></div>
     </div>
     <div class="content">
       <span class="input-legend">Analyst</span
@@ -164,7 +135,7 @@
         type="text"
         class="search-bar"
         id="universalInput"
-        style="border-color: #7a3aa5"
+        style="border-color: #b9703c"
         placeholder="Universal Search"
       />
       <span class="input-legend" style="background-color: #a53a67">QC</span>
@@ -221,79 +192,6 @@
           reader.readAsArrayBuffer(file);
         });
 
-      function updateDashboard(data) {
-        if (!data || data.length < 2) return;
-        const header = data[0];
-        const analystIdx = header.indexOf("L1 Analyst");
-        const qcIdx = header.indexOf("L1 QC ");
-        const locationIdx = header.indexOf("Location");
-        const caseTypeIdx = header.indexOf("Case Type");
-        const samplingIdx = header.indexOf("Sampling Percentage");
-
-        const analysts = new Set();
-        const qcs = new Set();
-        const analystLocation = {
-          Hyderabad: new Set(),
-          Gurgaon: new Set(),
-          Bengalore: new Set(),
-        };
-
-        let samplingAnalysts = new Set();
-        const samplingPercentCounts = { "50%": 0, "25%": 0, "10%": 0 };
-        for (let i = 1; i < data.length; i++) {
-          const row = data[i];
-
-          if (row[analystIdx]) analysts.add(row[analystIdx].trim());
-          if (row[qcIdx]) qcs.add(row[qcIdx].trim());
-          if (row[locationIdx] && row[analystIdx]) {
-            const loc = row[locationIdx].trim().toLowerCase();
-            if (loc === "hyderabad")
-              analystLocation.Hyderabad.add(row[analystIdx].trim());
-            if (loc === "gurgaon")
-              analystLocation.Gurgaon.add(row[analystIdx].trim());
-            if (loc === "bengalore")
-              analystLocation.Bengalore.add(row[analystIdx].trim());
-            if (loc === "isreal")
-              analystLocation.Bengalore.add(row[analystIdx].trim());
-          }
-
-          if (
-            row[caseTypeIdx] &&
-            row[caseTypeIdx].toLowerCase().includes("sampling")
-          ) {
-            if (row[analystIdx]) samplingAnalysts.add(row[analystIdx].trim());
-          }
-
-          if (row[samplingIdx]) {
-            const percent = row[samplingIdx].trim();
-            if (["50%", "25%", "10%"].includes(percent)) {
-              samplingPercentCounts[percent]++;
-            }
-          }
-        }
-        document.getElementById("analystCount").textContent = analysts.size;
-        document.getElementById("qcCount").textContent = qcs.size;
-        document.getElementById("hyderabadAnalystCount").textContent =
-          analystLocation.Hyderabad.size;
-        document.getElementById("gurgaonAnalystCount").textContent =
-          analystLocation.Gurgaon.size;
-        document.getElementById("bengaloreAnalystCount").textContent =
-          analystLocation.Bengalore.size;
-        document.getElementById("israelAnalystCount").textContent =
-          analystLocation.Bengalore.size;
-        document.getElementById("samplingAnalystCount").textContent =
-          samplingAnalysts.size;
-
-        document.getElementById("percent50").textContent =
-          samplingPercentCounts["50%"];
-        document.getElementById("percent25").textContent =
-          samplingPercentCounts["25%"];
-        document.getElementById("percent10").textContent =
-          samplingPercentCounts["10%"];
-        document.getElementById("totalCount").textContent =
-          analysts.size + qcs.size;
-      }
-
       function searchTable() {
         const universalValue = document
           .getElementById("universalInput")
@@ -319,8 +217,8 @@
             universalTerms.length === 0 ||
             universalTerms.some((term) =>
               cells.some((cell) =>
-                cell.textContent.toLowerCase().includes(term)
-              )
+                cell.textContent.toLowerCase().includes(term),
+              ),
             );
 
           const matchQC = qcValue === "" || qcCell.includes(qcValue);
