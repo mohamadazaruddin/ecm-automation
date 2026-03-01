@@ -20,7 +20,6 @@ Sub Macro4()
     wsforZelle.Name = "Zelle"
 
 End Sub
-
 Private Sub DeleteSheetIfExists(ByVal wb As Workbook, ByVal sheetName As String)
     Dim ws As Worksheet
     On Error Resume Next
@@ -30,9 +29,40 @@ Private Sub DeleteSheetIfExists(ByVal wb As Workbook, ByVal sheetName As String)
     If Not ws Is Nothing Then ws.Delete
     
 End Sub
-Sub Trans_1()
+Sub DeleteAllPivotTablesInWorkbook()
+    Dim wb As Workbook: Set wb = ActiveWorkbook
+    Dim ws As Worksheet
+    Dim pt As PivotTable
+    Dim i As Long
+
+    Application.ScreenUpdating = False
+    Application.EnableEvents = False
+
+    On Error GoTo CleanUp
+
+    For Each ws In wb.Worksheets
+        ' Delete from last to first (safer when clearing ranges)
+        For i = ws.PivotTables.Count To 1 Step -1
+            Set pt = ws.PivotTables(i)
+            pt.TableRange2.Clear   ' removes the entire pivot table from the sheet
+        Next i
+    Next ws
+
+    ' Optional: clear pivot caches to reduce file size / fully "reset"
+    For i = wb.PivotCaches.Count To 1 Step -1
+        On Error Resume Next
+        wb.PivotCaches(i).MissingItemsLimit = xlMissingItemsNone
+        wb.PivotCaches(i).RefreshOnFileOpen = False
+        On Error GoTo 0
+    Next i
+
+CleanUp:
+    Application.EnableEvents = True
+    Application.ScreenUpdating = True
+End Sub
+Sub createallpivots()
 '
-' Trans_1 Macro
+' createallpivots Macro
 '
 
 '
@@ -41,11 +71,11 @@ Sub Trans_1()
     Application.CutCopyMode = False
     Application.CutCopyMode = False
     ActiveWorkbook.PivotCaches.Create(SourceType:=xlDatabase, SourceData:= _
-        "Table1", Version:=8).CreatePivotTable TableDestination:="Pattern!R1C1", _
-        TableName:="PivotTable8", DefaultVersion:=8
+        "Table1", Version:=8).CreatePivotTable TableDestination:="Pattern!R18C1", _
+        TableName:="PivotTable1", DefaultVersion:=8
     Sheets("Pattern").Select
-    Cells(1, 1).Select
-    With ActiveSheet.PivotTables("PivotTable8")
+    Cells(18, 1).Select
+    With ActiveSheet.PivotTables("PivotTable1")
         .ColumnGrand = True
         .HasAutoFormat = True
         .DisplayErrorString = False
@@ -76,38 +106,28 @@ Sub Trans_1()
         .CalculatedMembersInFilters = False
         .RowAxisLayout xlCompactRow
     End With
-    With ActiveSheet.PivotTables("PivotTable8").PivotCache
+    With ActiveSheet.PivotTables("PivotTable1").PivotCache
         .RefreshOnFileOpen = False
         .MissingItemsLimit = xlMissingItemsDefault
     End With
-    ActiveSheet.PivotTables("PivotTable8").RepeatAllLabels xlRepeatLabels
-    ActiveSheet.PivotTables("PivotTable8").AddDataField ActiveSheet.PivotTables( _
-        "PivotTable8").PivotFields("amount "), "Sum of amount ", xlSum
-    With ActiveSheet.PivotTables("PivotTable8").PivotFields("type")
+    ActiveSheet.PivotTables("PivotTable1").RepeatAllLabels xlRepeatLabels
+    ActiveWorkbook.ShowPivotTableFieldList = True
+    With ActiveSheet.PivotTables("PivotTable1").PivotFields("alerted ")
         .Orientation = xlPageField
         .Position = 1
     End With
-    With ActiveSheet.PivotTables("PivotTable8").PivotFields("year")
-        .Orientation = xlColumnField
-        .Position = 1
-    End With
-    With ActiveSheet.PivotTables("PivotTable8").PivotFields("cp")
-        .Orientation = xlRowField
-        .Position = 1
-    End With
-    ActiveSheet.PivotTables("PivotTable8").PivotFields("type").ClearAllFilters
-    ActiveSheet.PivotTables("PivotTable8").PivotFields("type").CurrentPage = _
-        "Debit"
+    ActiveSheet.PivotTables("PivotTable1").AddDataField ActiveSheet.PivotTables( _
+        "PivotTable1").PivotFields("amount "), "Sum of amount ", xlSum
     Sheets("Input-Transaction-file").Select
     Range("Table1[#All]").Select
     Application.CutCopyMode = False
     Application.CutCopyMode = False
-    ActiveWorkbook.Worksheets("Pattern").PivotTables("PivotTable8").PivotCache. _
-        CreatePivotTable TableDestination:="Pattern!R30C1", TableName:= _
-        "PivotTable9", DefaultVersion:=8
+    ActiveWorkbook.Worksheets("Pattern").PivotTables("PivotTable1").PivotCache. _
+        CreatePivotTable TableDestination:="Pattern!R18C6", TableName:= _
+        "PivotTable2", DefaultVersion:=8
     Sheets("Pattern").Select
-    Cells(30, 1).Select
-    With ActiveSheet.PivotTables("PivotTable9")
+    Cells(18, 6).Select
+    With ActiveSheet.PivotTables("PivotTable2")
         .ColumnGrand = True
         .HasAutoFormat = True
         .DisplayErrorString = False
@@ -138,33 +158,261 @@ Sub Trans_1()
         .CalculatedMembersInFilters = False
         .RowAxisLayout xlCompactRow
     End With
-    With ActiveSheet.PivotTables("PivotTable9").PivotCache
+    With ActiveSheet.PivotTables("PivotTable2").PivotCache
         .RefreshOnFileOpen = False
         .MissingItemsLimit = xlMissingItemsDefault
     End With
-    ActiveSheet.PivotTables("PivotTable9").RepeatAllLabels xlRepeatLabels
-    With ActiveSheet.PivotTables("PivotTable9").PivotFields("year")
+    ActiveSheet.PivotTables("PivotTable2").RepeatAllLabels xlRepeatLabels
+    With ActiveSheet.PivotTables("PivotTable2").PivotFields("month")
         .Orientation = xlColumnField
         .Position = 1
     End With
-    ActiveSheet.PivotTables("PivotTable9").AddDataField ActiveSheet.PivotTables( _
-        "PivotTable9").PivotFields("amount "), "Sum of amount ", xlSum
-    With ActiveSheet.PivotTables("PivotTable9").PivotFields("type")
-        .Orientation = xlPageField
-        .Position = 1
-    End With
-    With ActiveSheet.PivotTables("PivotTable9").PivotFields("cp")
+    ActiveSheet.PivotTables("PivotTable2").PivotFields("month").AutoGroup
+    With ActiveSheet.PivotTables("PivotTable2").PivotFields("type")
         .Orientation = xlRowField
         .Position = 1
     End With
-    ActiveSheet.PivotTables("PivotTable9").PivotFields("type").ClearAllFilters
-    ActiveSheet.PivotTables("PivotTable9").PivotFields("type").CurrentPage = _
-        "Credit"
+    ActiveSheet.PivotTables("PivotTable2").AddDataField ActiveSheet.PivotTables( _
+        "PivotTable2").PivotFields("amount "), "Sum of amount ", xlSum
+    ActiveSheet.PivotTables("PivotTable2").PivotFields("Years (month)"). _
+        Orientation = xlHidden
+    ActiveSheet.PivotTables("PivotTable2").PivotFields("Quarters (month)"). _
+        Orientation = xlHidden
+    ActiveSheet.PivotTables("PivotTable2").PivotFields("Months (month)"). _
+        Orientation = xlHidden
     ActiveWorkbook.ShowPivotTableFieldList = False
+    Range("G27").Select
+    Sheets("Input-Transaction-file").Select
+    Range("Table1[#All]").Select
+    Application.CutCopyMode = False
+    Application.CutCopyMode = False
+    ActiveWorkbook.Worksheets("Pattern").PivotTables("PivotTable2").PivotCache. _
+        CreatePivotTable TableDestination:="Counterparty!R1C1", TableName:= _
+        "PivotTable3", DefaultVersion:=8
+    Sheets("Counterparty").Select
+    Cells(1, 1).Select
+    With ActiveSheet.PivotTables("PivotTable3")
+        .ColumnGrand = True
+        .HasAutoFormat = True
+        .DisplayErrorString = False
+        .DisplayNullString = True
+        .EnableDrilldown = True
+        .ErrorString = ""
+        .MergeLabels = False
+        .NullString = ""
+        .PageFieldOrder = 2
+        .PageFieldWrapCount = 0
+        .PreserveFormatting = True
+        .RowGrand = True
+        .SaveData = True
+        .PrintTitles = False
+        .RepeatItemsOnEachPrintedPage = True
+        .TotalsAnnotation = False
+        .CompactRowIndent = 1
+        .InGridDropZones = False
+        .DisplayFieldCaptions = True
+        .DisplayMemberPropertyTooltips = False
+        .DisplayContextTooltips = True
+        .ShowDrillIndicators = True
+        .PrintDrillIndicators = False
+        .AllowMultipleFilters = False
+        .SortUsingCustomLists = True
+        .FieldListSortAscending = False
+        .ShowValuesRow = False
+        .CalculatedMembersInFilters = False
+        .RowAxisLayout xlCompactRow
+    End With
+    With ActiveSheet.PivotTables("PivotTable3").PivotCache
+        .RefreshOnFileOpen = False
+        .MissingItemsLimit = xlMissingItemsDefault
+    End With
+    ActiveSheet.PivotTables("PivotTable3").RepeatAllLabels xlRepeatLabels
+    ActiveWorkbook.ShowPivotTableFieldList = True
+    ActiveSheet.PivotTables("PivotTable3").AddDataField ActiveSheet.PivotTables( _
+        "PivotTable3").PivotFields("amount "), "Sum of amount ", xlSum
+    With ActiveSheet.PivotTables("PivotTable3").PivotFields("cp")
+        .Orientation = xlRowField
+        .Position = 1
+    End With
+    Sheets("Input-Transaction-file").Select
+    Range("Table1[#All]").Select
+    Application.CutCopyMode = False
+    Application.CutCopyMode = False
+    ActiveWorkbook.Worksheets("Pattern").PivotTables("PivotTable2").PivotCache. _
+        CreatePivotTable TableDestination:="Counterparty!R1C4", TableName:= _
+        "PivotTable4", DefaultVersion:=8
+    Sheets("Counterparty").Select
+    Cells(1, 4).Select
+    With ActiveSheet.PivotTables("PivotTable4")
+        .ColumnGrand = True
+        .HasAutoFormat = True
+        .DisplayErrorString = False
+        .DisplayNullString = True
+        .EnableDrilldown = True
+        .ErrorString = ""
+        .MergeLabels = False
+        .NullString = ""
+        .PageFieldOrder = 2
+        .PageFieldWrapCount = 0
+        .PreserveFormatting = True
+        .RowGrand = True
+        .SaveData = True
+        .PrintTitles = False
+        .RepeatItemsOnEachPrintedPage = True
+        .TotalsAnnotation = False
+        .CompactRowIndent = 1
+        .InGridDropZones = False
+        .DisplayFieldCaptions = True
+        .DisplayMemberPropertyTooltips = False
+        .DisplayContextTooltips = True
+        .ShowDrillIndicators = True
+        .PrintDrillIndicators = False
+        .AllowMultipleFilters = False
+        .SortUsingCustomLists = True
+        .FieldListSortAscending = False
+        .ShowValuesRow = False
+        .CalculatedMembersInFilters = False
+        .RowAxisLayout xlCompactRow
+    End With
+    With ActiveSheet.PivotTables("PivotTable4").PivotCache
+        .RefreshOnFileOpen = False
+        .MissingItemsLimit = xlMissingItemsDefault
+    End With
+    ActiveSheet.PivotTables("PivotTable4").RepeatAllLabels xlRepeatLabels
+    With ActiveSheet.PivotTables("PivotTable4").PivotFields("year")
+        .Orientation = xlColumnField
+        .Position = 1
+    End With
+    With ActiveSheet.PivotTables("PivotTable4").PivotFields("cp")
+        .Orientation = xlRowField
+        .Position = 1
+    End With
+    ActiveSheet.PivotTables("PivotTable4").AddDataField ActiveSheet.PivotTables( _
+        "PivotTable4").PivotFields("amount "), "Sum of amount ", xlSum
+    ActiveWorkbook.ShowPivotTableFieldList = False
+    Sheets("Input-Transaction-file").Select
+    Range("Table1[#All]").Select
+    Application.CutCopyMode = False
+    Range("Table1[#All]").Select
+    Application.CutCopyMode = False
+    Application.CutCopyMode = False
+    ActiveWorkbook.Worksheets("Pattern").PivotTables("PivotTable2").PivotCache. _
+        CreatePivotTable TableDestination:="Zelle!R1C1", TableName:="PivotTable5", _
+        DefaultVersion:=8
+    Sheets("Zelle").Select
+    Cells(1, 1).Select
+    With ActiveSheet.PivotTables("PivotTable5")
+        .ColumnGrand = True
+        .HasAutoFormat = True
+        .DisplayErrorString = False
+        .DisplayNullString = True
+        .EnableDrilldown = True
+        .ErrorString = ""
+        .MergeLabels = False
+        .NullString = ""
+        .PageFieldOrder = 2
+        .PageFieldWrapCount = 0
+        .PreserveFormatting = True
+        .RowGrand = True
+        .SaveData = True
+        .PrintTitles = False
+        .RepeatItemsOnEachPrintedPage = True
+        .TotalsAnnotation = False
+        .CompactRowIndent = 1
+        .InGridDropZones = False
+        .DisplayFieldCaptions = True
+        .DisplayMemberPropertyTooltips = False
+        .DisplayContextTooltips = True
+        .ShowDrillIndicators = True
+        .PrintDrillIndicators = False
+        .AllowMultipleFilters = False
+        .SortUsingCustomLists = True
+        .FieldListSortAscending = False
+        .ShowValuesRow = False
+        .CalculatedMembersInFilters = False
+        .RowAxisLayout xlCompactRow
+    End With
+    With ActiveSheet.PivotTables("PivotTable5").PivotCache
+        .RefreshOnFileOpen = False
+        .MissingItemsLimit = xlMissingItemsDefault
+    End With
+    ActiveSheet.PivotTables("PivotTable5").RepeatAllLabels xlRepeatLabels
+    ActiveWorkbook.ShowPivotTableFieldList = True
+    With ActiveSheet.PivotTables("PivotTable5").PivotFields("type")
+        .Orientation = xlRowField
+        .Position = 1
+    End With
+    ActiveSheet.PivotTables("PivotTable5").AddDataField ActiveSheet.PivotTables( _
+        "PivotTable5").PivotFields("amount "), "Sum of amount ", xlSum
+    With ActiveSheet.PivotTables("PivotTable5").PivotFields("alerted ")
+        .Orientation = xlRowField
+        .Position = 2
+    End With
+    ActiveWorkbook.ShowPivotTableFieldList = False
+    Sheets("Input-Transaction-file").Select
+    Range("Table1[#All]").Select
+    Application.CutCopyMode = False
+    Application.CutCopyMode = False
+    ActiveWorkbook.Worksheets("Pattern").PivotTables("PivotTable2").PivotCache. _
+        CreatePivotTable TableDestination:="Zelle!R1C5", TableName:="PivotTable6", _
+        DefaultVersion:=8
+    Sheets("Zelle").Select
+    Cells(1, 5).Select
+    With ActiveSheet.PivotTables("PivotTable6")
+        .ColumnGrand = True
+        .HasAutoFormat = True
+        .DisplayErrorString = False
+        .DisplayNullString = True
+        .EnableDrilldown = True
+        .ErrorString = ""
+        .MergeLabels = False
+        .NullString = ""
+        .PageFieldOrder = 2
+        .PageFieldWrapCount = 0
+        .PreserveFormatting = True
+        .RowGrand = True
+        .SaveData = True
+        .PrintTitles = False
+        .RepeatItemsOnEachPrintedPage = True
+        .TotalsAnnotation = False
+        .CompactRowIndent = 1
+        .InGridDropZones = False
+        .DisplayFieldCaptions = True
+        .DisplayMemberPropertyTooltips = False
+        .DisplayContextTooltips = True
+        .ShowDrillIndicators = True
+        .PrintDrillIndicators = False
+        .AllowMultipleFilters = False
+        .SortUsingCustomLists = True
+        .FieldListSortAscending = False
+        .ShowValuesRow = False
+        .CalculatedMembersInFilters = False
+        .RowAxisLayout xlCompactRow
+    End With
+    With ActiveSheet.PivotTables("PivotTable6").PivotCache
+        .RefreshOnFileOpen = False
+        .MissingItemsLimit = xlMissingItemsDefault
+    End With
+    ActiveSheet.PivotTables("PivotTable6").RepeatAllLabels xlRepeatLabels
+    ActiveWorkbook.ShowPivotTableFieldList = True
+    With ActiveSheet.PivotTables("PivotTable6").PivotFields("alerted ")
+        .Orientation = xlColumnField
+        .Position = 1
+    End With
+    ActiveSheet.PivotTables("PivotTable6").AddDataField ActiveSheet.PivotTables( _
+        "PivotTable6").PivotFields("amount "), "Sum of amount ", xlSum
+    With ActiveSheet.PivotTables("PivotTable6").PivotFields("type")
+        .Orientation = xlRowField
+        .Position = 1
+    End With
+    ActiveWorkbook.ShowPivotTableFieldList = False
+    Range("H16").Select
 End Sub
 Sub Trigger()
 Macro4
-Trans_1
+DeleteAllPivotTablesInWorkbook
+createallpivots
 
 MsgBox "Execution Completed Successfully", vbInformation
 End Sub
+
