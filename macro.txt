@@ -417,3 +417,5 @@ MsgBox "Execution Completed Successfully", vbInformation
 End Sub
 =IF(COUNTIF(transaction!$C:$C,$A1)=0,"Not available",SUMIF(transaction!$C:$C,$A1,transaction!$E:$E))
 =IF(COUNTIF(transaction!$C:$C,$A1)=0,"Not available",SUMIF(transaction!$C:$C,$A1,transaction!$E:$E))
+
+=IF(COUNTIFS(transaction!$C:$C,$A1,transaction!$B:$B,"*debit*")=0,"Not available",SUMIFS(transaction!$E:$E,transaction!$C:$C,$A1,transaction!$B:$B,"*debit*"))
