@@ -8,3 +8,6 @@ IF(ISNUMBER(SEARCH("high",t)),"High",
 range
 
 =IFERROR(IFS(A7<=3,"0-3 Days",A7<=5,"3-5 Days",A7<=7,"5-7 Days",A7<=9,"7-9 Days",A7>9,"9+ Days"),"")
+=IF(OR(A1="",ISBLANK(A1)),"",IFS(A1<=3,"0-3 Days",A1<=5,"3-5 Days",A1<=7,"5-7 Days",A1<=9,"7-9 Days",A1>9,"9+ Days"))
+
+=IF(F3="","",F3)
