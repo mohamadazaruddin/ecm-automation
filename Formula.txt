@@ -11,3 +11,10 @@ range
 =IF(OR(A1="",ISBLANK(A1)),"",IFS(A1<=3,"0-3 Days",A1<=5,"3-5 Days",A1<=7,"5-7 Days",A1<=9,"7-9 Days",A1>9,"9+ Days"))
 
 =IF(F3="","",F3)
+
+
+count
+=IF(COUNTIF(transaction!$C:$C,$A1)=0,"Not Available",COUNTIF(transaction!$C:$C,$A1))
+
+total debit 
+=SUMIF(transaction!B:B,"*debit*",transaction!F:F)
