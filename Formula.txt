@@ -1,0 +1,5 @@
+=LET(t,LOWER(A2),
+IF(ISNUMBER(SEARCH("low",t)),"Low",
+IF(ISNUMBER(SEARCH("medium",t)),"Medium",
+IF(ISNUMBER(SEARCH("high",t)),"High",
+"Missing complexity"))))
