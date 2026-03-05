@@ -3,3 +3,8 @@ IF(ISNUMBER(SEARCH("low",t)),"Low",
 IF(ISNUMBER(SEARCH("medium",t)),"Medium",
 IF(ISNUMBER(SEARCH("high",t)),"High",
 "Missing complexity"))))
+
+
+range
+
+=IFERROR(IFS(A7<=3,"0-3 Days",A7<=5,"3-5 Days",A7<=7,"5-7 Days",A7<=9,"7-9 Days",A7>9,"9+ Days"),"")
