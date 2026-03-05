@@ -18,3 +18,4 @@ count
 
 total debit 
 =SUMIF(transaction!B:B,"*debit*",transaction!F:F)
+=IF(COUNTIF(transaction!$C:$C,$A1)=0,"Not Available",COUNTIFS(transaction!$C:$C,$A1,transaction!$B:$B,"Debit"))
