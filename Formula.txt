@@ -83,5 +83,20 @@ in
 B) Efficiency per analyst and complexity
 Just group by Analyst Name and Complexity in the same pattern, then compute Efficiency the same way.
 
+// missing finder
+let
+    AnalystText = if [offshore Analyst] = null then "" else Text.Trim(Text.From([offshore Analyst])),
+    TLText = if [TL] = null then "" else Text.Trim(Text.From([TL])),
+    QCText = if [QC] = null then "" else Text.Trim(Text.From([QC])),  ISMText = if [IM] = null then "" else Text.Trim(Text.From([IM])),
 
+    MissingList = List.RemoveNulls({
+        if Text.Length(AnalystText) <= 2 then "Analyst" else null,
+        if Text.Length(TLText) <= 2 then "TL" else null,
+        if Text.Length(QCText) <= 2 then "QC" else null,
+        if Text.Length(ISMText) <= 2 then "IM" else null
+    })
+in
+    if List.Count(MissingList) = 0
+    then "Complete"
+    else Text.Combine(MissingList, "+") & " missing"
 
