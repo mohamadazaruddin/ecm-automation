@@ -378,9 +378,28 @@
       function renderCards(data) {
         const totalCount = data.length;
 
-        const uniqueAnalysts = new Set(data.map((item) => item.Name)).size;
-        const uniqueQC = new Set(data.map((item) => item.QC)).size;
-        const uniqueTL = new Set(data.map((item) => item.TL)).size;
+        
+        const uniqueAnalysts = new Set(
+  data
+    .filter(item => item.TD_Role?.toLowerCase().includes("analyst"))
+    .map(item => item.Name?.trim())
+    .filter(Boolean)
+).size;
+
+const uniqueQC = new Set(
+  data
+    .filter(item => item.TD_Role?.toLowerCase().includes("qc"))
+    .map(item => item.Name?.trim())
+    .filter(Boolean)
+).size;
+
+const uniqueTL = new Set(
+  data
+    .filter(item => item.TD_Role?.toLowerCase().includes("team lead"))
+    .map(item => item.Name?.trim())
+    .filter(Boolean)
+).size;
+
 
         const cards = [
           { title: "Total Count", value: totalCount },
