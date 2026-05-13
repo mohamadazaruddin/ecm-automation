@@ -103,3 +103,8 @@ in
 Week number
 =LET(d,[@Date],firstMon,DATE(YEAR(d),MONTH(d),1)+MOD(8-WEEKDAY(DATE(YEAR(d),MONTH(d),1),2),7),IF(WEEKDAY(d,2)>5,"",TEXT(d,"mmmm")&" Week "&IF(d<firstMon,1,INT((d-firstMon)/7)+1)))
 =TEXT([@Date],"dddd")
+
+
+Date.ToText([Date], "MMM") & " Week " & 
+Text.From(Date.WeekOfMonth([Date], Day.Monday))
+
