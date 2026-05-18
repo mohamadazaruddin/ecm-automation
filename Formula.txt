@@ -108,3 +108,10 @@ Week number
 Date.ToText([Date], "MMM") & " Week " & 
 Text.From(Date.WeekOfMonth([Date], Day.Monday))
 
+let
+    StartDate = [Date],
+    Dates = List.Dates(StartDate, 25, #duration(1,0,0,0)),
+    WorkingDays = List.Select(Dates, each Date.DayOfWeek(_, Day.Monday) < 5)
+in
+    WorkingDays{11}
+
